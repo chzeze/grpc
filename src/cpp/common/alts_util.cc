@@ -17,6 +17,7 @@
  */
 
 #include <grpc/grpc_security.h>
+#include <grpc/support/log.h>
 #include <grpcpp/security/alts_context.h>
 #include <grpcpp/security/alts_util.h>
 
@@ -52,7 +53,7 @@ std::unique_ptr<AltsContext> GetAltsContextFromAuthContext(
     gpr_log(GPR_ERROR, "security_level is invalid.");
     return nullptr;
   }
-  return grpc_core::MakeUnique<AltsContext>(AltsContext(ctx));
+  return absl::make_unique<AltsContext>(AltsContext(ctx));
 }
 
 grpc::Status AltsClientAuthzCheck(

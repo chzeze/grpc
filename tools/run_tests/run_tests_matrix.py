@@ -30,12 +30,8 @@ os.chdir(_ROOT)
 
 _DEFAULT_RUNTESTS_TIMEOUT = 1 * 60 * 60
 
-# Set the timeout high to allow enough time for sanitizers and pre-building
-# clang docker.
+# C/C++ tests can take long time
 _CPP_RUNTESTS_TIMEOUT = 4 * 60 * 60
-
-# C++ TSAN takes longer than other sanitizers
-_CPP_TSAN_RUNTESTS_TIMEOUT = 8 * 60 * 60
 
 # Set timeout high for ObjC for Cocoapods to install pods
 _OBJC_RUNTESTS_TIMEOUT = 90 * 60
@@ -261,35 +257,6 @@ def _create_test_jobs(extra_args=[], inner_jobs=_DEFAULT_INNER_JOBS):
                                 inner_jobs=inner_jobs,
                                 timeout_seconds=_OBJC_RUNTESTS_TIMEOUT)
 
-    # sanitizers
-    test_jobs += _generate_jobs(languages=['c'],
-                                configs=['msan', 'asan', 'tsan', 'ubsan'],
-                                platforms=['linux'],
-                                arch='x64',
-                                compiler='clang7.0',
-                                labels=['sanitizers', 'corelang'],
-                                extra_args=extra_args,
-                                inner_jobs=inner_jobs,
-                                timeout_seconds=_CPP_RUNTESTS_TIMEOUT)
-    test_jobs += _generate_jobs(languages=['c++'],
-                                configs=['asan'],
-                                platforms=['linux'],
-                                arch='x64',
-                                compiler='clang7.0',
-                                labels=['sanitizers', 'corelang'],
-                                extra_args=extra_args,
-                                inner_jobs=inner_jobs,
-                                timeout_seconds=_CPP_RUNTESTS_TIMEOUT)
-    test_jobs += _generate_jobs(languages=['c++'],
-                                configs=['tsan'],
-                                platforms=['linux'],
-                                arch='x64',
-                                compiler='clang7.0',
-                                labels=['sanitizers', 'corelang'],
-                                extra_args=extra_args,
-                                inner_jobs=inner_jobs,
-                                timeout_seconds=_CPP_TSAN_RUNTESTS_TIMEOUT)
-
     return test_jobs
 
 
@@ -308,7 +275,7 @@ def _create_portability_test_jobs(extra_args=[],
 
     # portability C and C++ on x64
     for compiler in [
-            'gcc4.8', 'gcc5.3', 'gcc7.4', 'gcc8.3', 'gcc_musl', 'clang3.5',
+            'gcc4.9', 'gcc5.3', 'gcc7.4', 'gcc8.3', 'gcc_musl', 'clang3.5',
             'clang3.6', 'clang3.7', 'clang7.0'
     ]:
         test_jobs += _generate_jobs(languages=['c', 'c++'],
